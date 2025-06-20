@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FB Preview Link Generator</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f4f4f4; }
+    input, button, textarea {
+      width: 100%; padding: 12px; margin-top: 10px; font-size: 16px;
+    }
+    button { background-color: #28a745; color: white; border: none; }
+    textarea { height: 250px; font-family: monospace; }
+    #htmlBox { display: none; }
+  </style>
+</head>
+<body>
+  <h2>🖼️ FB Clickable Image Link Generator</h2>
+  <input id="img" placeholder="Paste image URL (e.g. https://i.imgur.com/...)" />
+  <input id="link" placeholder="Paste target link (e.g. https://youtube.com/...)" />
+  <button onclick="generate()">Generate HTML Preview</button>
+  <div id="result"></div>
+  <div id="htmlBox">
+    <h3>⬇️ Copy This HTML and Save it as: <code>previews/preview-123.html</code></h3>
+    <textarea id="htmlOutput" readonly></textarea>
+  </div>
+
+  <script>
+    async function generate() {
+      const img = document.getElementById("img").value.trim();
+      const link = document.getElementById("link").value.trim();
+      if (!img || !link) return alert("Please enter both fields");
+
+      const res = await fetch("/.netlify/functions/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: img, url: link })
+      });
+
+      const text = await res.text();
+      document.getElementById("htmlBox").style.display = "block";
+      document.getElementById("htmlOutput").value = text;
+    }
+  </script>
+</body>
+</html>
